@@ -77,7 +77,9 @@ private:
   void cloudCallback(sensor_msgs::msg::PointCloud2::ConstSharedPtr cloud_msg);
 
   void subscriptionListenerThreadLoop();
-
+  
+  void applyDensityFilter(std::unique_ptr<sensor_msgs::msg::LaserScan>& scan_msg, int window_size, float density_threshold);
+  
   std::unique_ptr<tf2_ros::Buffer> tf2_;
   std::unique_ptr<tf2_ros::TransformListener> tf2_listener_;
   message_filters::Subscriber<sensor_msgs::msg::PointCloud2> sub_;
