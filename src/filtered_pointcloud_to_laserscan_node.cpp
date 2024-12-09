@@ -228,46 +228,64 @@ void PointCloudToLaserScanNode::cloudCallback(
       scan_msg->ranges[index] = range;
     }
   }
-  // === 밀집도 기반 필터 적용 ===
-  applyDensityFilter(scan_msg, 4, 0.8);  // 윈도우 크기 2, 임계값 0.6 설정
 
+  applyGapBasedFilter(scan_msg, 0.04);  // 간격 임계값 설정
 
   pub_->publish(std::move(scan_msg));
 }
 
-void PointCloudToLaserScanNode::applyDensityFilter(
-  std::unique_ptr<sensor_msgs::msg::LaserScan>& scan_msg, int window_size, float density_threshold)
+void PointCloudToLaserScanNode::applyGapBasedFilter(
+  std::unique_ptr<sensor_msgs::msg::LaserScan>& scan_msg, float distance_threshold)
 {
-  auto& ranges = scan_msg->ranges;
-  size_t num_rays = ranges.size();
+  auto& ranges = scan_msg->ranges;      
+  size_t num_rays = ranges.size();      
+  float max_gap_prev = 0.0;
+  float max_gap_next = 0.0;
+  int filtered_count = 0;
 
-  // 결과 저장용 필터링 배열
-  std::vector<float> filtered_ranges(num_rays, std::numeric_limits<float>::infinity());
+  std::vector<float> filtered_ranges = ranges;
 
-  for (size_t i = window_size; i < num_rays - window_size; ++i) {
-    int valid_points = 0;
+  for (size_t i = 1; i < num_rays - 1; ++i) {
+    float prev_range = ranges[i - 1];  // 이전 레이 값
+    float current_range = ranges[i];  // 현재 레이 값
+    float next_range = ranges[i + 1]; // 다음 레이 값
 
-    // 슬라이딩 윈도우 내 유효 레이 계산
-    for (int j = -window_size; j <= window_size; ++j) {
-      if (!std::isinf(ranges[i + j]) &&
-          ranges[i + j] > scan_msg->range_min && ranges[i + j] < scan_msg->range_max) {
-        valid_points++;
-      }
+    // if(i == 156)
+    // {
+    //   RCLCPP_INFO(this->get_logger(), "filtered_count : %d", filtered_count);
+    // }
+
+    // 현재 레이 값이 유효하지 않으면 필터링 
+    if (std::isinf(current_range) || current_range < scan_msg->range_min || current_range > scan_msg->range_max) {
+      continue;
     }
 
-    // 밀집도 계산
-    float density = static_cast<float>(valid_points) / (2 * window_size + 1);
+    float gap_prev = std::abs(current_range - prev_range);  // 이전 값과의 간격
+    float gap_next = std::abs(current_range - next_range);  // 다음 값과의 간격
 
-    // 밀집도가 임계값 이상이면 유효 값 유지
-    if (density >= density_threshold) {
-      filtered_ranges[i] = ranges[i];
+    if (gap_prev > max_gap_prev && gap_prev != std::numeric_limits<float>::infinity())
+    {
+      max_gap_prev = gap_prev;
+    }
+    if (gap_next > max_gap_next && gap_next != std::numeric_limits<float>::infinity())
+    {
+      max_gap_next = gap_next;
+    }
+
+    // RCLCPP_INFO(this->get_logger(), "--------------------------------------");
+    // RCLCPP_INFO(this->get_logger(), "num_rays : %ld, current_range : %ld",num_rays, i);
+    // RCLCPP_INFO(this->get_logger(), "gap_prev : %0.3f, gap_next : %0.3f",gap_prev, gap_next);
+    // RCLCPP_INFO(this->get_logger(), "max_gap_prev : %0.3f, max_gap_next : %0.3f",max_gap_prev, max_gap_next);
+
+
+    if (gap_prev >= distance_threshold && gap_next >= distance_threshold) {
+      filtered_ranges[i] = std::numeric_limits<float>::infinity();  // 노이즈 제거 
+      filtered_count++;
     }
   }
 
-  // 필터링된 값 복사
   ranges = filtered_ranges;
 }
-
 
 }  // namespace pointcloud_to_laserscan
 

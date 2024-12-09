@@ -78,7 +78,7 @@ private:
 
   void subscriptionListenerThreadLoop();
   
-  void applyDensityFilter(std::unique_ptr<sensor_msgs::msg::LaserScan>& scan_msg, int window_size, float density_threshold);
+  void applyGapBasedFilter(std::unique_ptr<sensor_msgs::msg::LaserScan>& scan_msg, float distance_threshold);
   
   std::unique_ptr<tf2_ros::Buffer> tf2_;
   std::unique_ptr<tf2_ros::TransformListener> tf2_listener_;
