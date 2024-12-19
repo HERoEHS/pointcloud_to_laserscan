@@ -12,11 +12,11 @@ def generate_launch_description():
         ),
         
         # Add the static transform from base_link to zed_camera_link
-        Node(package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_tf_pub_base_link_to_zed_camera_link',
-        arguments=['0.0', '0.0', '0.33', '0.0', '-0.1745', '0.0', 'base_link', 'zed_camera_link'],
-        ),
+        # Node(package='tf2_ros',
+        # executable='static_transform_publisher',
+        # name='static_tf_pub_base_link_to_zed_camera_link',
+        # arguments=['0.0', '0.0', '0.33', '0.0', '-0.1745', '0.0', 'base_link', 'zed_camera_link'],
+        # ),
 
         Node(
             package='pointcloud_to_laserscan', executable='filtered_pointcloud_to_laserscan_node',

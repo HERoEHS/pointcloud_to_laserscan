@@ -30,6 +30,24 @@ ament_auto_add_executable(dummy_pointcloud_publisher
   src/dummy_pointcloud_publisher.cpp
 )
 
+# 새로 추가한 sor_pointcloud_filter 노드를 위한 빌드 설정
+find_package(PCL REQUIRED)
+find_package(pcl_conversions REQUIRED)
+
+add_executable(sor_pointcloud_filter_node
+  src/sor_pointcloud_filter.cpp
+)
+ament_target_dependencies(sor_pointcloud_filter_node
+  rclcpp
+  sensor_msgs
+  pcl_conversions
+  PCL
+)
+
+install(TARGETS sor_pointcloud_filter_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
