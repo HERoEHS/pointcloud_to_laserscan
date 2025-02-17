@@ -35,7 +35,7 @@ def generate_launch_description():
                 'angle_increment': 0.02,  # M_PI/360.0
                 'scan_time': 0.1,
                 'range_min': 0.7,         # 원래 값 0.1
-                'range_max': 3.0,          # 7.0
+                'range_max': 1.5,          # 7.0
                 'use_inf': True,
                 'inf_epsilon': 1.0,
                 'min_noise_distance': 0.5,          # 원래 1.0
