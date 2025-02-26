@@ -18,13 +18,23 @@ rclcpp_components_register_node(pointcloud_to_laserscan
   PLUGIN "pointcloud_to_laserscan::PointCloudToLaserScanNode"
   EXECUTABLE pointcloud_to_laserscan_node)
 
+### 라이다용 ###
+ament_auto_add_library(lidar_pointcloud_to_laserscan SHARED
+  src/lidar_pointcloud_to_laserscan_node.cpp)
 
-ament_auto_add_library(filtered_pointcloud_to_laserscan SHARED
-  src/filtered_pointcloud_to_laserscan_node.cpp)
-
-rclcpp_components_register_node(filtered_pointcloud_to_laserscan
+rclcpp_components_register_node(lidar_pointcloud_to_laserscan
   PLUGIN "pointcloud_to_laserscan::PointCloudToLaserScanNode"
-  EXECUTABLE filtered_pointcloud_to_laserscan_node)
+  EXECUTABLE lidar_pointcloud_to_laserscan_node)
+### 라이다용 ###
+
+### ZED2i용 ###
+ament_auto_add_library(zed2i_pointcloud_to_laserscan SHARED
+  src/zed2i_pointcloud_to_laserscan_node.cpp)
+
+rclcpp_components_register_node(zed2i_pointcloud_to_laserscan
+  PLUGIN "pointcloud_to_laserscan::PointCloudToLaserScanNode"
+  EXECUTABLE zed2i_pointcloud_to_laserscan_node)
+### ZED2i용 ###
 
 ament_auto_add_executable(dummy_pointcloud_publisher
   src/dummy_pointcloud_publisher.cpp
